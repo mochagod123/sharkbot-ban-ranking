@@ -5,7 +5,7 @@
         .box {
             background-color: #36393f;
             border-radius: 8px;
-            width: 300px;
+            width: 500px;
             padding: 16px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             display: flex;
@@ -40,11 +40,20 @@
                     for (var key in data.Data) {
                         console.log(key)
                         var d = document.createElement("div");
-                        if (key == "1") {
-                            d.textContent = `👑${key}: ${data.Data[key].UserID} .. ${data.Data[key].Count}回`
+                        if (data.Data[key].UserID == data.Data[key].Name) {
+                            if (key == "1") {
+                                d.textContent = `👑${key}: ${data.Data[key].Name} .. ${data.Data[key].Count}回`
+                            } else {
+                                d.textContent = `${key}: ${data.Data[key].Name} .. ${data.Data[key].Count}回`
+                            }
                         } else {
-                            d.textContent = `${key}: ${data.Data[key].UserID} .. ${data.Data[key].Count}回`
+                            if (key == "1") {
+                                d.textContent = `👑${key}: ${data.Data[key].Name}(${data.Data[key].UserID}) .. ${data.Data[key].Count}回`
+                            } else {
+                                d.textContent = `${key}: ${data.Data[key].Name}(${data.Data[key].UserID}) .. ${data.Data[key].Count}回`
+                            }
                         }
+
                         d.className = "box"
                         var br = document.createElement("br");
                         document.getElementById("ban_rank").appendChild(d);
