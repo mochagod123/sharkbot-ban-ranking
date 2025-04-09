@@ -30,6 +30,7 @@
             <center>
                 <h1>BANランキング</h1>
                 <div id="ban_rank">
+                    Now Loading..
                 </div>
             </center>
         </div>
@@ -63,7 +64,12 @@
                 });
             }
 
-            get_data();
+            setTimeout(function() {
+                document.getElementById("ban_rank").innerHTML = "";
+                get_data();
+            }, 3000);
+
+            
         </script>
     </body>
 </html>
