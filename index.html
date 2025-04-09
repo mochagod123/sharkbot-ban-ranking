@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>SharkBot Ban Ranking</title>
+        <style>
+        .box {
+            background-color: #36393f;
+            border-radius: 8px;
+            width: 300px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #ccc;
+        }
+        .box h3 {
+            margin-top: 0;
+            font-size: 20px;
+            text-transform: lowercase;
+        }
+
+        .box p {
+            font-size: 14px;
+            color: #ccc;
+        }
+        </style>
+    </head>
+    <body>
+        <div>
+            <center>
+                <h1>BANランキング</h1>
+                <div id="ban_rank">
+                </div>
+            </center>
+        </div>
+        <script>
+            function get_data() {
+                var ban_ranking = fetch("https://api.sharkbot.xyz/ranking/ban").then((response) => response.json()).then((data) => {
+                    console.log(data.Data)
+                    for (var key in data.Data) {
+                        console.log(key)
+                        var d = document.createElement("div");
+                        if (key == "1") {
+                            d.textContent = `👑${key}: ${data.Data[key].UserID} .. ${data.Data[key].Count}回`
+                        } else {
+                            d.textContent = `${key}: ${data.Data[key].UserID} .. ${data.Data[key].Count}回`
+                        }
+                        d.className = "box"
+                        var br = document.createElement("br");
+                        document.getElementById("ban_rank").appendChild(d);
+                        document.getElementById("ban_rank").appendChild(br);
+                    };
+                    
+                });
+            }
+
+            get_data();
+        </script>
+    </body>
+</html>
