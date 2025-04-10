@@ -28,7 +28,8 @@
     <body>
         <div>
             <center>
-                <h1>BANランキング</h1>
+                <h1>BANランキング (最大5000件の表示)</h1>
+                <hr>
                 <div id="ban_rank">
                     Now Loading..
                 </div>
@@ -39,7 +40,6 @@
                 var ban_ranking = fetch("https://api.sharkbot.xyz/ranking/ban").then((response) => response.json()).then((data) => {
                     console.log(data.Data)
                     for (var key in data.Data) {
-                        console.log(key)
                         var d = document.createElement("div");
                         if (data.Data[key].UserID == data.Data[key].Name) {
                             if (key == "1") {
@@ -67,7 +67,7 @@
             setTimeout(function() {
                 document.getElementById("ban_rank").innerHTML = "";
                 get_data();
-            }, 3000);
+            }, 5000);
 
             
         </script>
