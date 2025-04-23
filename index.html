@@ -2,27 +2,78 @@
     <head>
         <title>SharkBot Ban Ranking</title>
         <style>
-        .box {
-            background-color: #36393f;
-            border-radius: 8px;
-            width: 500px;
-            padding: 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+            font-family: sans-serif;
+            }
+
+            .card {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px 20px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            }
+
+            .rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #f39c12;
+            margin-bottom: 10px;
+            }
+
+            .content {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            color: #ccc;
-        }
-        .box h3 {
-            margin-top: 0;
-            font-size: 20px;
-            text-transform: lowercase;
-        }
+            align-items: center;
+            gap: 10px;
+            }
 
-        .box p {
-            font-size: 14px;
-            color: #ccc;
-        }
+            .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            }
+
+            .info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            }
+
+            .name {
+            font-weight: bold;
+            }
+
+            .text {
+            color: #555;
+            }
+
+            button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 5px;
+            width: 200px;
+            height: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            background-color: #1976d2;
+            }
+
+            button:hover {
+            opacity: .7;
+            }
         </style>
         <meta name="twitter:title" content="SharkBot Ban Ranking" />
         <meta name="twitter:card" content="summary" />
@@ -33,47 +84,97 @@
         <div>
             <center>
                 <h1>BANランキング (最大5000件の表示)</h1>
-                <hr>
                 <div id="ban_rank">
-                    Now Loading..
                 </div>
+
+                <button id="loadMore">👇</button>
             </center>
         </div>
         <script>
-            function get_data() {
-                var ban_ranking = fetch("https://api.sharkbot.xyz/ranking/ban").then((response) => response.json()).then((data) => {
-                    console.log(data.Data)
-                    for (var key in data.Data) {
-                        var d = document.createElement("div");
-                        if (data.Data[key].UserID == data.Data[key].Name) {
-                            if (key == "1") {
-                                d.textContent = `👑${key}: ${data.Data[key].Name} .. ${data.Data[key].Count}回`
-                            } else {
-                                d.textContent = `${key}: ${data.Data[key].Name} .. ${data.Data[key].Count}回`
-                            }
-                        } else {
-                            if (key == "1") {
-                                d.textContent = `👑${key}: ${data.Data[key].Name}(${data.Data[key].UserID}) .. ${data.Data[key].Count}回`
-                            } else {
-                                d.textContent = `${key}: ${data.Data[key].Name}(${data.Data[key].UserID}) .. ${data.Data[key].Count}回`
-                            }
-                        }
+            let banData = [];
+            
+            let displayIndex = 0;
 
-                        d.className = "box"
-                        var br = document.createElement("br");
-                        document.getElementById("ban_rank").appendChild(d);
-                        document.getElementById("ban_rank").appendChild(br);
-                    };
-                    
-                });
+            function get_data() {
+                fetch("https://api.sharkbot.xyz/ranking/ban")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        banData = data.Data;
+                        showNextFive();
+                    });
             }
 
-            setTimeout(function() {
-                document.getElementById("ban_rank").innerHTML = "";
-                get_data();
-            }, 5000);
+            function createCard(rankText, avatarUrl, name, content) {
+                const card = document.createElement('div');
+                card.className = 'card';
 
-            
+                const rank = document.createElement('div');
+                rank.className = 'rank';
+                rank.textContent = rankText;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'content';
+
+                const avatar = document.createElement('img');
+                avatar.className = 'avatar';
+                avatar.src = avatarUrl;
+                avatar.alt = 'アバター';
+
+                const info = document.createElement('div');
+                info.className = 'info';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'name';
+                nameDiv.textContent = name;
+
+                const textDiv = document.createElement('div');
+                textDiv.className = 'text';
+                textDiv.textContent = content;
+
+                info.appendChild(nameDiv);
+                info.appendChild(textDiv);
+
+                contentDiv.appendChild(avatar);
+                contentDiv.appendChild(info);
+
+                card.appendChild(rank);
+                card.appendChild(contentDiv);
+
+                return card;
+            }
+            function showNextFive() {
+                const keys = Object.keys(banData);
+                const container = document.getElementById("ban_rank");
+
+                const nextItems = keys.slice(displayIndex, displayIndex + 5);
+                nextItems.forEach((key) => {
+                    const user = banData[key];
+                    let cardElement;
+
+                    if (user.UserID == user.Name) {
+                        cardElement = createCard(`${key}位`, user.Avatar, `${user.Name}`, `${user.Count}回`);
+                    } else {
+                        cardElement = createCard(`${key}位`, user.Avatar, `${user.Name}(${user.UserID})`, `${user.Count}回`);
+                    }
+
+                    container.appendChild(cardElement);
+                });
+
+                displayIndex += 5;
+
+                if (displayIndex >= keys.length) {
+                    document.getElementById("loadMore").style.display = "none";
+                }
+            }
+
+            document.getElementById("loadMore").addEventListener("click", showNextFive);
+
+            document.getElementById("loadMore").disabled = "disabled";
+
+            setTimeout(function() {
+                get_data();
+                document.getElementById("loadMore").disabled = null;
+            }, 5000);
         </script>
     </body>
 </html>
